@@ -7,6 +7,21 @@ const AppliedJobs = () => {
     const jobs = useLoaderData();
 
     const [appliedJobs, setAppliedJobs] = useState([]);
+    const [displayJobs, SetDisplayJobs] = useState([]);
+
+    const handleJobsFilter = filter => {
+        if (filter === 'all') {
+            SetDisplayJobs(appliedJobs);
+        }
+        else if (filter === 'remote') {
+            const remoteJobs = appliedJobs.filter(job => job.remote_or_onsite === 'Remote');
+            SetDisplayJobs(remoteJobs);
+        }
+        else if (filter === 'onsite') {
+            const onsiteJobs = appliedJobs.filter(job => job.remote_or_onsite === 'Onsite');
+            SetDisplayJobs(onsiteJobs);
+        }
+    }
 
     useEffect(() => {
         const storedJobIds = getStoredJobApplication();
@@ -22,23 +37,24 @@ const AppliedJobs = () => {
             }
             
             setAppliedJobs(jobsApplied);
+            SetDisplayJobs(jobsApplied);
             /* console.log(jobs, storedJobIds, jobsApplied); */
         }
-    }, [])
+    }, [jobs]);
     return (
         <div>
             <h1 className="text-2xl">AppliedJobs : {appliedJobs.length}</h1>
             <details className="dropdown">
                 <summary className="m-1 btn">open or close</summary>
                 <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                    <li><a>All</a></li>
-                    <li><a>Remote</a></li>
-                    <li><a>On Site</a></li>
+                    <li onClick={() => handleJobsFilter('all')}><a>All</a></li>
+                    <li onClick={() => handleJobsFilter('remote')}><a>Remote</a></li>
+                    <li onClick={() => handleJobsFilter('onsite')}><a>On Site</a></li>
                 </ul>
             </details>
             <ul>
                 {
-                    appliedJobs.map(job => <li key={job.id}>
+                    displayJobs.map(job => <li key={job.id}>
                         <span>{job.job_title} - {job.company_name} : { job.remote_or_onsite}</span>
                     </li>)
                 }
